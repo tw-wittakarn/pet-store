@@ -1,0 +1,15 @@
+@model Order
+<div class="jumbotron">
+    <h1>Thank you, @Model.ShipName!</h1>
+    <p>Your order <strong>@ViewBag.OrderNumber</strong> has been placed.</p>
+    <p>Estimated delivery: @ViewBag.Delivery</p>
+</div>
+<table class="table">
+    @foreach (var l in Model.Lines)
+    {
+        <tr><td>@l.ItemName</td><td>@l.Qty</td><td>@Utils.FormatPrice(l.UnitPrice * l.Qty)</td></tr>
+    }
+    <tr><td colspan="2">Total</td><th>@Utils.FormatPrice(Model.Total)</th></tr>
+</table>
+<p>Paid with card @Utils.MaskCard(Model.CardNumber). Shipping to @Model.ShipAddress, @Model.ShipCity @Model.ShipZip.</p>
+<a href="/Account/MyOrders" class="btn btn-default">View my orders</a>

@@ -1,0 +1,11 @@
+<h2>Manage pets <a href="/Admin/CreatePet" class="btn btn-success btn-sm pull-right">+ Add pet</a></h2>
+@await Html.PartialAsync("_AdminNav")
+
+<div id="admin-pet-table">Loading...</div>
+
+@section scripts {
+    @* webpack build was broken the week this was written so it uses in-browser babel. TODO move to ClientApp *@
+    @Html.Raw(BundleConfig.Render("~/bundles/react"))
+    @Html.Raw(BundleConfig.Render("~/bundles/babel"))
+    <script type="text/babel" data-presets="react" src="/Scripts/admin/petTable.jsx"></script>
+}

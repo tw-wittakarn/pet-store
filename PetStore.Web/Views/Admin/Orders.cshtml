@@ -1,0 +1,36 @@
+@model List<Order>
+@{
+    var users = (Dictionary<int, string>)ViewBag.Users;
+    var statuses = new[] { "New", "Paid", "Shipped", "Cancelled" };
+}
+<h2>Orders</h2>
+@await Html.PartialAsync("_AdminNav")
+<p>Filter:
+    <a href="/Admin/Orders">All</a>
+    @foreach (var s in statuses) { <text> | </text><a href="/Admin/Orders?status=@s">@s</a> }
+</p>
+<table class="table table-striped">
+    <tr><th>#</th><th>Date</th><th>Customer</th><th>Ship to</th><th>Card</th><th>Total</th><th>Status</th><th>Change</th></tr>
+    @foreach (var o in Model)
+    {
+        <tr>
+            <td><a href="/Checkout/Confirmation/@o.Id">@o.Id</a></td>
+            <td>@o.OrderDate</td>
+            <td>@users[o.UserId]</td>
+            <td>@o.ShipName, @o.ShipCity</td>
+            <td>@o.CardNumber</td>
+            <td>@Utils.FormatMoney(o.Total)</td>
+            <td>@Html.Raw(Utils.StatusLabel(o.Status))</td>
+            <td>
+                @foreach (var s in statuses)
+                {
+                    if (s != o.Status)
+                    {
+                        <a href="/Admin/UpdateOrderStatus?id=@o.Id&status=@s" class="btn btn-default btn-xs">@s</a>
+                    }
+                }
+            </td>
+        </tr>
+        <tr><td></td><td colspan="7" class="small text-muted">Notes: @Html.Raw(o.Notes)</td></tr>
+    }
+</table>

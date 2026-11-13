@@ -1,0 +1,21 @@
+@model List<Order>
+<h2>My orders</h2>
+@if (Model.Count == 0)
+{
+    <p>You haven't ordered anything yet. <a href="/Pets">Start shopping</a></p>
+}
+@foreach (var o in Model)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a href="/Checkout/Confirmation/@o.Id">Order #@o.Id</a> - @o.OrderDate - @Html.Raw(Utils.StatusLabel(o.Status))
+            <span class="pull-right"><strong>@Utils.FormatPrice(o.Total)</strong></span>
+        </div>
+        <ul class="list-group">
+            @foreach (var l in o.Lines)
+            {
+                <li class="list-group-item">@l.ItemName x @l.Qty <span class="pull-right">@Utils.FormatPrice(l.UnitPrice * l.Qty)</span></li>
+            }
+        </ul>
+    </div>
+}

@@ -1,0 +1,60 @@
+@model List<Supply>
+@{
+    var cats = (List<Category>)ViewBag.Categories;
+    int page = ViewBag.Page;
+    int totalPages = ViewBag.TotalPages;
+}
+<h2>Supplies</h2>
+<form method="get" class="form-inline" style="margin-bottom:15px">
+    <select name="catId" class="form-control">
+        <option value="0">All</option>
+        @foreach (var c in cats)
+        {
+            <option value="@c.Id" selected="@(ViewBag.CatId == c.Id)">@c.Name</option>
+        }
+    </select>
+    <input type="text" name="q" value="@ViewBag.Q" class="form-control" placeholder="Search supplies" />
+    <select name="sort" class="form-control">
+        <option value="">Name</option>
+        <option value="price" selected="@(ViewBag.Sort == "price")">Price low-high</option>
+        <option value="price_desc" selected="@(ViewBag.Sort == "price_desc")">Price high-low</option>
+    </select>
+    <button class="btn btn-default">Go</button>
+</form>
+
+<table class="table table-striped">
+    <thead><tr><th></th><th>Item</th><th>Brand</th><th>Price</th><th>Stock</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td><img src="@s.ImagePath" style="height:40px" /></td>
+            <td><a href="/Supplies/Details/@s.SupplyId">@s.SupplyName</a></td>
+            <td>@s.Brand</td>
+            <td>@s.DisplayPrice</td>
+            <td>
+                @if (s.Stock == 0) { <span class="label label-danger">Out of stock</span> }
+                else if (s.Stock < 5) { <span class="label label-warning">@s.Stock left</span> }
+                else { @s.Stock }
+            </td>
+            <td>
+                @if (s.Stock > 0)
+                {
+                    <form method="post" action="/Cart/Add" class="form-inline add-to-cart-form">
+                        <input type="hidden" name="type" value="SUPPLY" />
+                        <input type="hidden" name="id" value="@s.SupplyId" />
+                        <input type="number" name="qty" value="1" min="1" class="form-control input-sm" style="width:60px" />
+                        <button class="btn btn-primary btn-sm">Add</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<ul class="pagination">
+    @for (var i = 1; i <= totalPages; i++)
+    {
+        <li class="@(i == page ? "active" : "")"><a href="?catId=@ViewBag.CatId&q=@ViewBag.Q&sort=@ViewBag.Sort&page=@i">@i</a></li>
+    }
+</ul>

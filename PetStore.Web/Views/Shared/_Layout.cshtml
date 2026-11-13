@@ -1,0 +1,93 @@
+@{
+    // work out cart count for the badge
+    var cartJson = Context.Session.GetString("Cart");
+    var cartCount = 0;
+    if (cartJson != null)
+    {
+        var items = JsonConvert.DeserializeObject<List<CartItem>>(cartJson);
+        foreach (var i in items) { cartCount += i.Qty; }
+    }
+    var userName = Context.Session.GetString("UserName");
+    var isAdmin = Context.Session.GetString("IsAdmin") == "1";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - @MvcApplication.SiteName</title>
+    @Html.Raw(BundleConfig.Render("~/Content/css"))
+    <style>
+        body { padding-top: 70px; }
+        .pet-card img { object-fit: cover; }
+    </style>
+    <script>
+        window.APP_CONFIG = @Html.Raw(Utils.ClientConfigJson());
+    </script>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-heart"></span> @MvcApplication.SiteName</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/Pets">Pets</a></li>
+                    <li><a href="/Supplies">Supplies</a></li>
+                    <li><a href="/Home/About">About</a></li>
+                    @if (isAdmin)
+                    {
+                        <li><a href="/Admin" style="color:#f0ad4e">Admin</a></li>
+                    }
+                </ul>
+                <form class="navbar-form navbar-left" action="/Pets" method="get">
+                    <input type="text" name="search" class="form-control" placeholder="Search pets..." value="@Context.Request.Query["search"]" />
+                </form>
+                <ul class="nav navbar-nav navbar-right">
+                    <li id="react-minicart"></li>
+                    <li><a href="/Cart"><span class="glyphicon glyphicon-shopping-cart"></span> Cart <span class="badge" id="cart-count">@cartCount</span></a></li>
+                    @if (userName != null)
+                    {
+                        <li><a href="/Account/MyOrders">Hi, @userName</a></li>
+                        <li><a href="/Account/Logout">Logout</a></li>
+                    }
+                    else
+                    {
+                        <li><a href="/Account/Login">Login</a></li>
+                        <li><a href="/Account/Register">Register</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container body-content">
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success">@TempData["Message"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+        <div id="ajax-message"></div>
+
+        @RenderBody()
+
+        <hr />
+        <footer>
+            <p>&copy; 2009 - @DateTime.Now.Year @MvcApplication.SiteName. All rights reserved. | Free shipping on orders over $@Utils.FREE_SHIP</p>
+        </footer>
+    </div>
+
+    @Html.Raw(BundleConfig.Render("~/bundles/jquery"))
+    @Html.Raw(BundleConfig.Render("~/bundles/bootstrap"))
+    <script src="/Scripts/site.js"></script>
+    <script src="/Scripts/dist/cart.bundle.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

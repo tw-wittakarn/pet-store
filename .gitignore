@@ -1,0 +1,13 @@
+bin/
+obj/
+*.user
+.vs/
+node_modules/
+*.db
+*.db-shm
+*.db-wal
+petstore.log
+emails.log
+PetStore.Web/wwwroot/uploads/*
+!PetStore.Web/wwwroot/uploads/.gitkeep
+.DS_Store

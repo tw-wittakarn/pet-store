@@ -1,0 +1,20 @@
+@model List<Supply>
+<h2>Inventory</h2>
+@await Html.PartialAsync("_AdminNav")
+<table class="table table-condensed">
+    <tr><th>Id</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Active</th><th></th></tr>
+    @foreach (var s in Model)
+    {
+        <tr class="@(s.Stock <= 0 ? "danger" : s.Stock < 5 ? "warning" : "")">
+            <form method="post" action="/Admin/UpdateStock">
+                <td>@s.SupplyId<input type="hidden" name="id" value="@s.SupplyId" /></td>
+                <td>@s.SupplyName</td>
+                <td>@Utils.GetCategoryName(s.CatId)</td>
+                <td><input name="price" value="@s.Price" class="form-control input-sm" style="width:90px" /></td>
+                <td><input name="stock" value="@s.Stock" class="form-control input-sm" style="width:70px" /></td>
+                <td><input name="active" value="@s.Active" class="form-control input-sm" style="width:50px" title="1=active 0=hidden 2=discontinued" /></td>
+                <td><button class="btn btn-primary btn-xs">Update</button></td>
+            </form>
+        </tr>
+    }
+</table>

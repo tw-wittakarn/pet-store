@@ -1,0 +1,36 @@
+@model Pet
+@* NOTE: there is also Utils.BuildPetCardHtml used on the home page. Keep them in sync! *@
+<div class="col-sm-6 col-md-4">
+    <div class="thumbnail pet-card">
+        <a href="/Pets/Details/@Model.Id"><img src="@(Model.ImageUrl ?? "/images/placeholder.svg")" alt="@Model.Name" style="height:160px" /></a>
+        <div class="caption">
+            <h4>
+                @Model.Name
+                @if (Model.IsNew) { <span class="label label-success">NEW</span> }
+                @if (Model.IsSold) { <span class="label label-default">SOLD</span> }
+            </h4>
+            <p class="text-muted">@Model.Breed &middot; @Model.Age &middot; @Utils.GetCategoryName(Model.CategoryId)</p>
+            @{
+                var catName = Utils.GetCategoryName(Model.CategoryId);
+                var discounted = Utils.ApplyDiscount(Model.Price, catName);
+            }
+            @if (discounted < Model.Price)
+            {
+                <p><del>@Utils.FormatPrice(Model.Price)</del> <strong class="text-danger">@Utils.FormatPrice(discounted)</strong> <span class="label label-danger">10% OFF</span></p>
+            }
+            else
+            {
+                <p><strong>@Model.DisplayPrice</strong></p>
+            }
+            @if (!Model.IsSold)
+            {
+                <form method="post" action="/Cart/Add" class="add-to-cart-form">
+                    <input type="hidden" name="type" value="PET" />
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-shopping-cart"></span> Add to cart</button>
+                    <a href="/Pets/Details/@Model.Id" class="btn btn-default btn-sm">Details</a>
+                </form>
+            }
+        </div>
+    </div>
+</div>

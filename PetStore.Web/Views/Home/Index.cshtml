@@ -1,0 +1,41 @@
+@{
+    var featured = (List<Pet>)ViewBag.Featured;
+    var cats = (List<Category>)ViewBag.Categories;
+    var counts = (Dictionary<int, int>)ViewBag.Counts;
+    var lowStock = (List<Supply>)ViewBag.LowStock;
+}
+<div class="jumbotron">
+    <h1>@ViewBag.Greeting@(Context.Session.GetString("FullName") != null ? ", " + Context.Session.GetString("FullName") : "")!</h1>
+    <p>Find your new best friend at @MvcApplication.SiteName. Over @counts.Values.Sum() pets waiting for a home.</p>
+    <p><a href="/Pets" class="btn btn-primary btn-lg">Browse pets &raquo;</a></p>
+</div>
+
+<div class="row">
+    @foreach (var c in cats)
+    {
+        <div class="col-md-2 col-sm-4 text-center">
+            <a href="/Pets?categoryId=@c.Id" class="btn btn-default btn-block">
+                @c.Name <span class="badge">@counts[c.Id]</span>
+            </a>
+        </div>
+    }
+</div>
+
+<h2>Featured friends</h2>
+<div class="row">
+    @foreach (var p in featured)
+    {
+        @Html.Raw(Utils.BuildPetCardHtml(p))
+    }
+</div>
+
+@if (lowStock.Count > 0)
+{
+    <h3>Hurry! Almost gone</h3>
+    <div class="row">
+        @foreach (var s in lowStock)
+        {
+            @Html.Raw(Utils.BuildSupplyCardHtml(s))
+        }
+    </div>
+}

@@ -1,0 +1,59 @@
+@model CheckoutViewModel
+@{
+    var errors = ViewBag.Errors as List<string>;
+}
+<h2>Checkout</h2>
+
+@if (errors != null && errors.Count > 0)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var e in errors) { <li>@e</li> }
+        </ul>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-7">
+        <form method="post" action="/Checkout/PlaceOrder" id="checkout-form">
+            <h4>Shipping</h4>
+            <div class="form-group"><label>Full name</label><input name="ShipName" value="@Model.ShipName" class="form-control" /></div>
+            <div class="form-group"><label>Address</label><input name="ShipAddress" value="@Model.ShipAddress" class="form-control" /></div>
+            <div class="row">
+                <div class="col-xs-8"><div class="form-group"><label>City</label><input name="ShipCity" value="@Model.ShipCity" class="form-control" /></div></div>
+                <div class="col-xs-4"><div class="form-group"><label>Postcode</label><input name="ShipZip" value="@Model.ShipZip" class="form-control" /></div></div>
+            </div>
+            <h4>Payment <small>(test: any card starting with 4 or 5. 4000000000000002 is declined)</small></h4>
+            <div class="form-group"><label>Card number</label><input name="CardNumber" value="@Model.CardNumber" class="form-control" autocomplete="on" /></div>
+            <div class="row">
+                <div class="col-xs-6"><div class="form-group"><label>Expiry (MM/YY)</label><input name="CardExpiry" value="@Model.CardExpiry" class="form-control" /></div></div>
+                <div class="col-xs-6"><div class="form-group"><label>CVV</label><input name="CardCvv" value="@Model.CardCvv" class="form-control" /></div></div>
+            </div>
+            <div class="form-group"><label>Notes</label><textarea name="Notes" class="form-control">@Model.Notes</textarea></div>
+            <button type="submit" class="btn btn-success btn-lg" id="place-order">Place order - @Utils.FormatPrice(Model.Total)</button>
+        </form>
+    </div>
+    <div class="col-md-5">
+        <div class="panel panel-default">
+            <div class="panel-heading">Order summary</div>
+            <table class="table">
+                @foreach (var i in Model.Items)
+                {
+                    <tr><td>@i.Name x @i.Qty</td><td class="text-right">@Utils.FormatPrice(i.Price * i.Qty)</td></tr>
+                }
+                <tr><td>Subtotal</td><td class="text-right">@Utils.FormatPrice(Model.SubTotal)</td></tr>
+                <tr><td>Shipping</td><td class="text-right">@(Model.Shipping == 0 ? "FREE" : Utils.FormatPrice(Model.Shipping))</td></tr>
+                <tr><td>Tax (@(MvcApplication.TaxRate * 100)%)</td><td class="text-right">@Model.Tax</td></tr>
+                <tr><th>Total</th><th class="text-right">@Utils.FormatPrice(Model.Total)</th></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $('#checkout-form').submit(function () {
+            $('#place-order').attr('disabled', 'disabled').text('Processing...');
+        });
+    </script>
+}

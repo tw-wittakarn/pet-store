@@ -1,0 +1,10 @@
+export const FETCH_CART = 'FETCH_CART';
+export const CART_LOADED = 'CART_LOADED';
+export const CART_ERROR = 'CART_ERROR';
+export const UPDATE_QTY = 'UPDATE_QTY';
+export const REMOVE_ITEM = 'REMOVE_ITEM';
+export const ITEM_REMOVED = 'ITEM_REMOVED';
+export const TOGGLE_MINICART = 'TOGGLE_MINICART';
+export const SET_COUPON = 'SET_COUPON';
+export const APPLY_COUPON = 'APPLY_COUPON'; // not implemented on server yet
+export const CLEAR_ERROR = 'CLEAR_ERROR';

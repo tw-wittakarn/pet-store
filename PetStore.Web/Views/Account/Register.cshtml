@@ -1,0 +1,26 @@
+@model User
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <h2>Create an account</h2>
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+        <form method="post" action="/Account/Register" id="register-form">
+            <div class="form-group"><label>Username</label><input name="Username" value="@Model.Username" class="form-control" data-val="true" data-val-required="Username is required" /><span data-valmsg-for="Username" class="text-danger"></span></div>
+            <div class="form-group"><label>Email</label><input name="Email" value="@Model.Email" class="form-control" data-val="true" data-val-email="Invalid email" data-val-required="Email is required" /><span data-valmsg-for="Email" class="text-danger"></span></div>
+            <div class="form-group"><label>Full name</label><input name="FullName" value="@Model.FullName" class="form-control" /></div>
+            <div class="form-group"><label>Address</label><input name="Address" value="@Model.Address" class="form-control" /></div>
+            <div class="row">
+                <div class="col-xs-8"><div class="form-group"><label>City</label><input name="City" value="@Model.City" class="form-control" /></div></div>
+                <div class="col-xs-4"><div class="form-group"><label>Postcode</label><input name="Zip" value="@Model.Zip" class="form-control" /></div></div>
+            </div>
+            <div class="form-group"><label>Password</label><input name="password" type="password" class="form-control" /></div>
+            <div class="form-group"><label>Confirm password</label><input name="confirmPassword" type="password" class="form-control" /></div>
+            <button class="btn btn-primary">Register</button>
+        </form>
+    </div>
+</div>
+@section scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

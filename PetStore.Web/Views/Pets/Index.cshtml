@@ -1,0 +1,56 @@
+@model PetListModel
+@Html.Raw(Utils.BuildBreadcrumb("Pets", (string)ViewBag.Title))
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">Filter</div>
+            <div class="panel-body">
+                <form method="get" action="/Pets">
+                    <div class="form-group">
+                        <label>Search</label>
+                        <input type="text" name="search" value="@Model.Search" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        @Html.Raw(Utils.BuildCategoryDropdown("categoryId", Model.CategoryId))
+                    </div>
+                    <div class="form-group">
+                        <label>Price</label>
+                        <div class="row">
+                            <div class="col-xs-6"><input type="number" name="minPrice" value="@Model.MinPrice" placeholder="min" class="form-control" /></div>
+                            <div class="col-xs-6"><input type="number" name="maxPrice" value="@Model.MaxPrice" placeholder="max" class="form-control" /></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Sort</label>
+                        <select name="sort" class="form-control">
+                            <option value="">Default</option>
+                            <option value="price" selected="@(Model.Sort == "price")">Price low-high</option>
+                            <option value="price_desc" selected="@(Model.Sort == "price_desc")">Price high-low</option>
+                            <option value="name" selected="@(Model.Sort == "name")">Name</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary btn-block">Apply</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <h2>@ViewBag.Title <small>@ViewBag.ResultCount results</small></h2>
+        @if (!string.IsNullOrEmpty(Model.Search))
+        {
+            <p>Showing results for: <strong>@Html.Raw(Model.Search)</strong></p>
+        }
+        <div class="row">
+            @foreach (var p in Model.Pets)
+            {
+                @await Html.PartialAsync("_PetCard", p)
+            }
+        </div>
+        @{
+            var qs = "/Pets?categoryId=" + Model.CategoryId + "&search=" + Model.Search + "&sort=" + Model.Sort + "&minPrice=" + Model.MinPrice + "&maxPrice=" + Model.MaxPrice;
+        }
+        @Html.Raw(Utils.BuildPager(Model.Page, Model.TotalPages, qs))
+    </div>
+</div>

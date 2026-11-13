@@ -1,0 +1,37 @@
+@{
+    var cart = (List<CartItem>)ViewBag.Cart;
+}
+<h2>Your cart</h2>
+
+@* React cart (ClientApp/src/components/CartPage.jsx) mounts here *@
+<div id="react-cart">
+    <p class="text-muted">Loading cart...</p>
+</div>
+
+@* old server rendered cart, kept for people without javascript *@
+<noscript>
+    <table class="table">
+        @foreach (var item in cart)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Qty</td>
+                <td>@Utils.FormatPrice(item.Price)</td>
+                <td>@Utils.FormatPrice(item.LineTotal)</td>
+                <td><a href="/Cart/Remove?type=@item.Type&id=@item.Id">remove</a></td>
+            </tr>
+        }
+    </table>
+</noscript>
+
+<div class="well well-sm text-right">
+    <small class="text-muted">
+        Estimated total (incl. @(Utils.TAX * 100)% tax): <strong>@Utils.FormatPrice((double)ViewBag.Total)</strong>
+    </small>
+</div>
+
+<div class="text-right">
+    <a href="/Pets" class="btn btn-default">Keep shopping</a>
+    <a href="/Cart/Clear" class="btn btn-link" onclick="return confirm('Empty your cart?')">Clear cart</a>
+    <a href="/Checkout" class="btn btn-success btn-lg">Checkout &raquo;</a>
+</div>

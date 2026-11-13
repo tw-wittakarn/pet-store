@@ -1,0 +1,52 @@
+@model Pet
+@{
+    var related = (List<Pet>)ViewBag.Related;
+    double discounted = ViewBag.DiscountedPrice;
+}
+@Html.Raw(Utils.BuildBreadcrumb("<a href='/Pets?categoryId=" + Model.CategoryId + "'>" + Model.Category.Name + "</a>", Model.Name))
+
+<div class="row">
+    <div class="col-md-5">
+        <img src="@Utils.GetImageOrPlaceholder(Model.ImageUrl)" class="img-responsive img-thumbnail" />
+    </div>
+    <div class="col-md-7">
+        <h1>@Model.Name @if (Model.IsSold) { <span class="label label-default">SOLD</span> }</h1>
+        <table class="table">
+            <tr><th>Breed</th><td>@Model.Breed</td></tr>
+            <tr><th>Age</th><td>@Model.Age (@Utils.AgeInMonths(Model.Age) months)</td></tr>
+            <tr><th>Category</th><td>@Model.Category.Name</td></tr>
+            <tr><th>Listed</th><td>@Model.CreatedDate</td></tr>
+        </table>
+        <div class="well">@Html.Raw(Model.Description)</div>
+
+        @if (discounted < Model.Price)
+        {
+            <h3><del>@Utils.FormatPrice(Model.Price)</del> <span class="text-danger">@Utils.FormatPrice(discounted)</span></h3>
+            <p class="text-danger">Big dog promo - 10% off!</p>
+        }
+        else
+        {
+            <h3>@Utils.FormatPrice(Model.Price)</h3>
+        }
+
+        @if (!Model.IsSold)
+        {
+            <form method="post" action="/Cart/Add" class="add-to-cart-form">
+                <input type="hidden" name="type" value="PET" />
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-shopping-cart"></span> Adopt @Model.Name</button>
+            </form>
+        }
+    </div>
+</div>
+
+@if (related.Count > 0)
+{
+    <h3>You might also like</h3>
+    <div class="row">
+        @foreach (var r in related)
+        {
+            @await Html.PartialAsync("_PetCard", r)
+        }
+    </div>
+}

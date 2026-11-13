@@ -1,0 +1,10 @@
+/* Site.css - 2013 */
+.body-content { padding-left: 15px; padding-right: 15px; }
+.jumbotron { background: #fdf3e7 !important; }
+.pet-card .caption h4 { min-height: 20px; }
+.thumbnail img { width: 100%; }
+#react-minicart a { color: #9d9d9d; }
+.navbar-brand .glyphicon { color: #d9534f; }
+/* important overrides because bootstrap */
+.btn-primary { background-color: #e67e22 !important; border-color: #d35400 !important; }
+.label-success { background-color: #27ae60 !important; }

@@ -1,0 +1,39 @@
+@{
+    var log = (List<Dictionary<string, object>>)ViewBag.Log;
+    var searches = (List<string>)ViewBag.RecentSearches;
+}
+<h2>Admin dashboard</h2>
+@await Html.PartialAsync("_AdminNav")
+<div class="row">
+    <div class="col-md-3"><div class="panel panel-primary"><div class="panel-heading">Pets</div><div class="panel-body"><h3>@ViewBag.PetCount <small>@ViewBag.SoldCount sold</small></h3></div></div></div>
+    <div class="col-md-3"><div class="panel panel-success"><div class="panel-heading">Orders</div><div class="panel-body"><h3>@ViewBag.OrderCount</h3></div></div></div>
+    <div class="col-md-3"><div class="panel panel-info"><div class="panel-heading">Customers</div><div class="panel-body"><h3>@ViewBag.UserCount</h3></div></div></div>
+    <div class="col-md-3"><div class="panel panel-warning"><div class="panel-heading">Revenue</div><div class="panel-body"><h3>@Utils.FormatMoney((double)ViewBag.Revenue)</h3></div></div></div>
+</div>
+<p>Configured tax rate (Settings table): <strong>@ViewBag.TaxRate</strong></p>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Recent searches</h4>
+        <ul>
+            @foreach (var s in searches)
+            {
+                <li>@Html.Raw(s)</li>
+            }
+        </ul>
+        @if (ViewBag.LastError != null)
+        {
+            <h4 class="text-danger">Last error</h4>
+            <pre style="max-height:200px;overflow:auto">@ViewBag.LastError</pre>
+        }
+    </div>
+    <div class="col-md-6">
+        <h4>Audit log</h4>
+        <table class="table table-condensed small">
+            @foreach (var row in log)
+            {
+                <tr><td>@row["At"]</td><td>@row["Who"]</td><td>@row["Message"]</td></tr>
+            }
+        </table>
+    </div>
+</div>

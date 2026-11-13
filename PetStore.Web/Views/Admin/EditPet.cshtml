@@ -1,0 +1,30 @@
+@model Pet
+@{
+    var cats = (List<Category>)ViewBag.Categories;
+    var isNew = Model.Id == 0;
+}
+<h2>@(isNew ? "Add pet" : "Edit " + Model.Name)</h2>
+@await Html.PartialAsync("_AdminNav")
+<form method="post" action="/Admin/@(isNew ? "CreatePet" : "EditPet")" enctype="multipart/form-data" class="form-horizontal">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <div class="form-group"><label class="col-sm-2 control-label">Name</label><div class="col-sm-6"><input name="Name" value="@Model.Name" class="form-control" required /></div></div>
+    <div class="form-group"><label class="col-sm-2 control-label">Category</label><div class="col-sm-6">
+        <select name="CategoryId" class="form-control">
+            @foreach (var c in cats)
+            {
+                <option value="@c.Id" selected="@(c.Id == Model.CategoryId)">@c.Name</option>
+            }
+        </select></div></div>
+    <div class="form-group"><label class="col-sm-2 control-label">Breed</label><div class="col-sm-6"><input name="Breed" value="@Model.Breed" class="form-control" /></div></div>
+    <div class="form-group"><label class="col-sm-2 control-label">Age</label><div class="col-sm-6"><input name="Age" value="@Model.Age" class="form-control" placeholder="e.g. 3 months" /></div></div>
+    <div class="form-group"><label class="col-sm-2 control-label">Price</label><div class="col-sm-6"><input name="Price" value="@Model.Price" class="form-control" /></div></div>
+    <div class="form-group"><label class="col-sm-2 control-label">Description (HTML ok)</label><div class="col-sm-6"><textarea name="Description" rows="5" class="form-control">@Model.Description</textarea></div></div>
+    <div class="form-group"><label class="col-sm-2 control-label">Image</label><div class="col-sm-6">
+        @if (Model.ImageUrl != null) { <img src="@Model.ImageUrl" style="height:60px" /> }
+        <input type="file" name="image" /></div></div>
+    <div class="form-group"><div class="col-sm-offset-2 col-sm-6">
+        <label><input type="checkbox" name="IsFeatured" value="true" @(Model.IsFeatured ? "checked" : "") /> Featured</label>
+        <label style="margin-left:15px"><input type="checkbox" name="IsSold" value="true" @(Model.IsSold ? "checked" : "") /> Sold</label>
+    </div></div>
+    <div class="form-group"><div class="col-sm-offset-2 col-sm-6"><button class="btn btn-primary">Save</button> <a href="/Admin/Pets" class="btn btn-link">Cancel</a></div></div>
+</form>

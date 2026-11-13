@@ -1,0 +1,29 @@
+@model Supply
+<ol class="breadcrumb"><li><a href="/">Home</a></li><li><a href="/Supplies">Supplies</a></li><li class="active">@Model.SupplyName</li></ol>
+<div class="row">
+    <div class="col-md-4"><img src="@Model.ImagePath" class="img-responsive img-thumbnail" /></div>
+    <div class="col-md-8">
+        <h1>@Model.SupplyName <small>@Model.Brand</small></h1>
+        <p>@Model.Desc</p>
+        <p>Category: @ViewBag.CategoryName</p>
+        <h3>@Utils.ToCurrency(Model.Price)</h3>
+        @if (Model.Active != 1)
+        {
+            <div class="alert alert-warning">This product is no longer available.</div>
+        }
+        else if (Model.Stock > 0)
+        {
+            <form method="post" action="/Cart/Add" class="form-inline add-to-cart-form">
+                <input type="hidden" name="type" value="SUPPLY" />
+                <input type="hidden" name="id" value="@Model.SupplyId" />
+                <input type="number" name="qty" value="1" min="1" max="@Model.Stock" class="form-control" style="width:80px" />
+                <button class="btn btn-success">Add to cart</button>
+            </form>
+            <p class="text-muted">@Model.Stock in stock</p>
+        }
+        else
+        {
+            <div class="alert alert-danger">Out of stock</div>
+        }
+    </div>
+</div>

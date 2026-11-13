@@ -1,0 +1,30 @@
+@model List<Category>
+<h2>Categories</h2>
+@await Html.PartialAsync("_AdminNav")
+<table class="table">
+    <tr><th>Id</th><th>Name</th><th>Description</th><th>Sort</th><th></th></tr>
+    @foreach (var c in Model)
+    {
+        <tr>
+            <form method="post" action="/Admin/SaveCategory">
+                <td>@c.Id<input type="hidden" name="id" value="@c.Id" /></td>
+                <td><input name="name" value="@c.Name" class="form-control input-sm" /></td>
+                <td><input name="description" value="@c.Description" class="form-control input-sm" /></td>
+                <td><input name="sortOrder" value="@c.SortOrder" class="form-control input-sm" style="width:60px" /></td>
+                <td>
+                    <button class="btn btn-primary btn-xs">Save</button>
+                    <a href="/Admin/DeleteCategory/@c.Id" class="btn btn-danger btn-xs" onclick="return confirm('Delete?')">Delete</a>
+                </td>
+            </form>
+        </tr>
+    }
+    <tr>
+        <form method="post" action="/Admin/SaveCategory">
+            <td>new<input type="hidden" name="id" value="0" /></td>
+            <td><input name="name" class="form-control input-sm" /></td>
+            <td><input name="description" class="form-control input-sm" /></td>
+            <td><input name="sortOrder" value="99" class="form-control input-sm" style="width:60px" /></td>
+            <td><button class="btn btn-success btn-xs">Add</button></td>
+        </form>
+    </tr>
+</table>
