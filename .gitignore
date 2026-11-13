@@ -8,6 +8,6 @@ node_modules/
 *.db-wal
 petstore.log
 emails.log
-PetStore.Web/wwwroot/uploads/*
-!PetStore.Web/wwwroot/uploads/.gitkeep
+legacy/PetStore.Web/wwwroot/uploads/*
+!legacy/PetStore.Web/wwwroot/uploads/.gitkeep
 .DS_Store

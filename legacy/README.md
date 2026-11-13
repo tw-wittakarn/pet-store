@@ -5,10 +5,11 @@ Online pet store. Started 2009 as WebForms, moved to ASP.NET MVC 5 in 2013, "upg
 ## Running
 
 ```
+cd legacy
 dotnet run --project PetStore.Web
 ```
 
-Browse to http://localhost:5080. The SQLite database (`PetStore.Web/petstore.db`) is created and seeded on first run.
+Browse to http://localhost:5080. The SQLite database (`legacy/PetStore.Web/petstore.db`) is created and seeded on first run.
 Delete the file to reset.
 
 Test accounts: `admin` / `admin123`, `jdoe` / `password`, `msmith` / `password`.
@@ -20,7 +21,7 @@ The cart page and mini cart are React (ClientApp/). The built bundle is committe
 so you don't need node to run the site. To rebuild:
 
 ```
-cd PetStore.Web/ClientApp
+cd legacy/PetStore.Web/ClientApp
 npm install
 npm run build
 ```
