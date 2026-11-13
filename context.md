@@ -2,7 +2,7 @@
 
 This file records **what was built, why, and every decision behind it**. Read it before working in this repo, whether you're a person or an AI agent.
 
-> ⚠️ **`PETSTORE_ANSWER_KEY.md` is the cheat sheet.** It lists every deliberately planted security hole, bug and code smell, with file and line numbers, a repro and a checkbox. If you're practising modernisation, **don't open it until you've done your own analysis**, then use it to compare and track progress.
+> ⚠️ **The `cheat-sheet/` folder is the cheat sheet.** It lists every deliberately planted security hole, bug and code smell (119 issues), split into one file per **logical boundary**, with file and line numbers, a repro and a checkbox. Start at `cheat-sheet/README.md`. If you're practising modernisation, **don't open it until you've done your own analysis**, then use it to compare and track progress.
 
 ---
 
@@ -25,7 +25,10 @@ Owner: x.keeratichayakorn@jetstar.com. Created 2026-11-13 with Claude Code (Opus
 ```
 pet-store/
 ├── context.md                 ← this file (background, decisions, scope)
-├── PETSTORE_ANSWER_KEY.md     ← CHEAT SHEET: all planted issues (spoiler)
+├── cheat-sheet/              ← CHEAT SHEET (spoiler): planted issues split by logical boundary
+│   ├── README.md              ← index: scope, boundary map, leak map, target modules, quick repros, ID history
+│   ├── 00-cross-cutting.md    ← issues spanning every boundary (god class, statics, no DI, tests)
+│   └── 01…20-*.md             ← one file per boundary (catalog, inventory, pricing, cart, ordering, …)
 ├── .gitignore
 └── legacy/                    ← the legacy application
     ├── PetStore.sln
@@ -120,7 +123,7 @@ dotnet run --project PetStore.Web     # http://localhost:5080
 | Q7 | Authentication | **Hand-rolled:** Users table, unsalted MD5, Session-based login, custom `[AdminOnly]` filter that some admin actions forget. |
 | Q8 | Deliberate security vulnerabilities | **Yes** (SQLi, XSS via `Html.Raw`, unrestricted upload, GET deletes without anti-forgery, and more). |
 | Q9 | Deliberate logic bugs | **Yes** (`double` money, non-atomic stock, cart vs checkout totals, `DateTime.Now`/timezones, and more). |
-| Q10 | Answer key | **Yes, separate from the code.** Originally in `~/temp`; now `pet-store/PETSTORE_ANSWER_KEY.md` (outside `legacy/`). |
+| Q10 | Answer key | **Yes, separate from the code.** Originally a single file in `~/temp`, then `pet-store/PETSTORE_ANSWER_KEY.md`, and now split by logical boundary into `pet-store/cheat-sheet/` (outside `legacy/`). |
 | Q11 | Legacy MVC 5 structure | **Yes:** `App_Start/`, `Content/`, `Scripts/`, `HttpContextHelper.Current`, `ViewBag`, 1,000+ line `Utils.cs`, static `MvcApplication` state. |
 | Q12 | Which tests | **Realistic poor tests:** a handful of `Utils` tests, one brittle DB-dependent test, one `[Ignore]` "fix later" test. Nothing on controllers or checkout. |
 | Q13 | Git | **`git init` + a single initial commit** as the baseline to diff refactors against. |
@@ -159,21 +162,47 @@ Fixed during the build (not a planted issue): the pet placeholder SVGs were gene
 
 - **Treat `legacy/` as the "before" picture.** Keep it intact as a reference, or modernise it in place on a branch. Either way, diff against `cfb038c`.
 - A modernised version, if built, should go in a **sibling folder** (e.g. `pet-store/modern/`) or a branch, so before and after can be compared side by side.
-- When fixing an issue, reference its cheat-sheet ID (`S-01`, `B-05`, `CS-12`, `FE-08`, `T-03`) in the commit message and tick its checkbox in `PETSTORE_ANSWER_KEY.md`.
+- When fixing an issue, reference its cheat-sheet ID (`S-01`, `B-05`, `CS-12`, `FE-08`, `T-03`) in the commit message and tick its checkbox in the matching `cheat-sheet/NN-*.md` file.
 - Write **characterisation tests first** (pin current behaviour, bugs included) before refactoring. The `[Ignore]`d test `Checkout_Total_Matches_Cart_Total` already documents bug B-03 and fails when un-ignored.
 - Don't run `npm run build` in `ClientApp` unless you intend to fix FE-03 (stale bundle).
 - Don't deploy this anywhere. It's intentionally vulnerable.
 
 ---
 
-## 8. Cheat-sheet summary (details in `PETSTORE_ANSWER_KEY.md`)
+## 8. Cheat-sheet summary (details in `cheat-sheet/`)
 
 | Category | Count | Highlights |
 |---|---|---|
 | Security (S-xx) | 22 | SQLi login + search, mass assignment, missing `[AdminOnly]`, GET deletes / no CSRF, IDOR, stored/reflected XSS, unrestricted upload, MD5, plain-text card numbers, secrets in config |
-| Logic bugs (B-xx) | 20 | `double` money, 3–4 different total calculations, 4 tax-rate sources, negative stock, double-sold pets, charge before persist, pagination, string dates, cascade delete, stale cache, fake discount and coupon, Session/Redux drift |
+| Logic bugs (B-xx) | 31 | `double` money, 3–4 different total calculations, 4 tax-rate sources, negative stock, double-sold pets, charge before persist, pagination, string dates, cascade delete, stale cache, fake discount and coupon, Session/Redux drift |
 | Backend smells (CS-xx) | 38 | `Utils.cs` god class, global statics, `HttpContext.Current`, no DI, mixed EF/raw SQL, fat controllers, duplicated cart/catalog/HTML code, N+1, no migrations, swallowed exceptions |
 | Frontend (FE-xx) | 20 | two React copies, in-browser Babel, stale bundle, webpack 4 OpenSSL hack, legacy lifecycles, reducer mutation, `takeEvery` races, jQuery inside sagas, duplicated pricing logic |
 | Tests / infra (T-xx) | 8 | near-zero coverage, brittle DB test, ignored failing test, untestable statics, no CI, runtime files in content root |
 
-The cheat sheet also has a capability/boundary section, a quick repro table and a suggested modernisation path.
+Total: **119 issues**. `cheat-sheet/README.md` also has the capability/boundary scope, the logical-boundary map (20 boundaries + cross-cutting, with per-boundary issue counts), the cross-boundary leak map, suggested target modules, a quick repro table, the ID history, and a suggested modernisation path.
+
+### Logical boundaries (summary; full detail in `cheat-sheet/README.md`)
+
+| # | Boundary | File |
+|---|---|---|
+| 0 | Cross-cutting | `cheat-sheet/00-cross-cutting.md` |
+| 1 | Catalog: Pets | `cheat-sheet/01-catalog-pets.md` |
+| 2 | Catalog: Supplies | `cheat-sheet/02-catalog-supplies.md` |
+| 3 | Category management | `cheat-sheet/03-category-management.md` |
+| 4 | Inventory | `cheat-sheet/04-inventory.md` |
+| 5 | Pricing and promotions | `cheat-sheet/05-pricing-promotions.md` |
+| 6 | Shopping cart | `cheat-sheet/06-shopping-cart.md` |
+| 7 | Ordering and checkout | `cheat-sheet/07-ordering-checkout.md` |
+| 8 | Payment | `cheat-sheet/08-payment.md` |
+| 9 | Order fulfilment | `cheat-sheet/09-order-fulfilment.md` |
+| 10 | Identity and access | `cheat-sheet/10-identity-access.md` |
+| 11 | Customer profile | `cheat-sheet/11-customer-profile.md` |
+| 12 | Pet content management (admin) | `cheat-sheet/12-pet-content-admin.md` |
+| 13 | Notifications | `cheat-sheet/13-notifications.md` |
+| 14 | Search analytics | `cheat-sheet/14-search-analytics.md` |
+| 15 | Audit, logging and errors | `cheat-sheet/15-audit-logging-errors.md` |
+| 16 | Configuration and settings | `cheat-sheet/16-configuration-settings.md` |
+| 17 | Reporting / dashboard | `cheat-sheet/17-reporting-dashboard.md` |
+| 18 | Data access and persistence | `cheat-sheet/18-data-access-persistence.md` |
+| 19 | Web shell and presentation | `cheat-sheet/19-web-shell-presentation.md` |
+| 20 | Client application | `cheat-sheet/20-client-application.md` |
